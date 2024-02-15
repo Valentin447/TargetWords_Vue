@@ -1,7 +1,13 @@
 <template>
-  <p>test0</p>
+  <Reader />
 </template>
+<script>
+import Reader from "./components/Reader.vue";
 
-<style lang="scss">
-
-</style>
+export default {
+  components: {
+    Reader,
+  },
+};
+</script>
+<style lang="scss"></style>
