@@ -1,12 +1,12 @@
 <template>
-  <Reader />
+  <TextReader />
 </template>
 <script>
-import Reader from "./components/Reader.vue";
+import TextReader from "./components/TextReader.vue";
 
 export default {
   components: {
-    Reader,
+    TextReader,
   },
 };
 </script>

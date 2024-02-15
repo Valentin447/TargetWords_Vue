@@ -7,27 +7,32 @@
 
 <script>
 export default {
+  data() {
+    return {
+      wordsArr: [],
+    };
+  },
   methods: {
     getSortedArray(wordsObj) {
-  const arrayObjWords = [];
-  let currentWord = {
-    word: "",
-    count: 0,
-  };
-  while (Object.keys(wordsObj).length > 0) {
-    for (const key in wordsObj) {
-      if (wordsObj[key] > currentWord.count) {
-        currentWord.word = key;
-        currentWord.count = wordsObj[key];
+      const arrayObjWords = [];
+      let currentWord = {
+        word: "",
+        count: 0,
+      };
+      while (Object.keys(wordsObj).length > 0) {
+        for (const key in wordsObj) {
+          if (wordsObj[key] > currentWord.count) {
+            currentWord.word = key;
+            currentWord.count = wordsObj[key];
+          }
+        }
+        arrayObjWords.push(structuredClone(currentWord));
+        delete wordsObj[currentWord.word];
+        currentWord.word = "";
+        currentWord.count = 0;
       }
-    }
-    arrayObjWords.push(structuredClone(currentWord));
-    delete wordsObj[currentWord.word];
-    currentWord.word = "";
-    currentWord.count = 0;
-  }
-  return arrayObjWords;
-},
+      return arrayObjWords;
+    },
     deletePlural(wordsObj) {
       let singl = [];
       for (const key in wordsObj) {
@@ -45,41 +50,75 @@ export default {
         }
       }
     },
-    read() {
-      const wordsObj = {};
-      document.getElementById("read").onclick = async () => {
-        let file = document.getElementById("fileInput").files[0];
-        let textReader = new TextReader(file);
+    async read() {
+      let file = document.getElementById("fileInput").files[0];
+      let textReader = new TextReader(file);
+      const reg = new RegExp("[^\\w]+|[0-9]", "g");
 
-        let count = 0;
-        const reg = new RegExp("[^\\w]+|[0-9]", "g");
+      console.log("1");
+      this.wordsArr.splice(0, this.wordsArr.length);
+      while (!textReader.endOfStream) {
+        let line = await textReader.readLine();
+        let lineFix = line.split("\r\n");
+        let lineNoHEX = lineFix[0].replace(/0[xX][A-Fa-f0-9]+/g, "");
+        let lineClean = lineNoHEX.replace(reg, " ");
+        let lineNoCamelCase = lineClean.replace(/([A-Z])/g, " $1");
+        let words = lineNoCamelCase.split(" ");
 
-        while (!textReader.endOfStream) {
-          let line = await textReader.readLine();
-          //++++++++++++++++++++++++++++++++++
-
-          let line2 = line.split("\r\n");
-          let words = line2[0].split(" ");
-
-          for (const word of words) {
-            let word2 = word.replace(reg, "");
-            if (word2 !== "") {
-              word2 = word2.toLowerCase();
-              if (word2 in wordsObj) {
-                wordsObj[word2]++;
-              } else {
-                wordsObj[word2] = 1;
-                count++;
+        for (let word of words) {
+          if (word !== "") {
+            word = word.toLowerCase();
+            let wordInArr = false;
+            for (const wordObj of this.wordsArr) {
+              if (word === wordObj.word) {
+                wordObj.count++;
+                wordInArr = true;
+                break;
               }
+            }
+            if (!wordInArr) {
+              this.wordsArr.push(createNewWordObj(word));
             }
           }
         }
-        this.deletePlural(wordsObj);
-        console.log(this.getSortedArray(wordsObj));
-      };
+      }
+
+      console.log("2");
+      deletePlural(this.wordsArr);
+      console.log("3");
+      this.wordsArr.sort((a, b) => b.count - a.count);
+      console.log("4");
+      console.log(this.wordsArr);
     },
   },
 };
+
+function createNewWordObj(word) {
+  const newWordObj = {
+    word: word,
+    count: 1,
+  };
+  return newWordObj;
+}
+
+function deletePlural(wordsArr) {
+  const singl = [];
+  for (const wordObj of wordsArr) {
+    if (wordObj.word.at(-1) !== "s") {
+      singl.push(wordObj);
+    }
+  }
+
+  for (const singlWord of singl) {
+    for (let i = 0; i < wordsArr.length; i++) {
+      if (singlWord.word + "s" === wordsArr[i].word) {
+        singlWord.count += wordsArr[i].count;
+        wordsArr.splice(i, 1);
+        break;
+      }
+    }
+  }
+}
 
 class TextReader {
   CHUNK_SIZE = 8192000;
@@ -173,8 +212,7 @@ class TextReader {
 
         this.byteBuffer = tempByteBuffer;
 
-        let lastIndexOfLineFeedCharacter = this.byteBuffer.lastIndexOf(10); // LINE FEED CHARACTER (\n) IS ONE BYTE LONG IN UTF-8 AND IS 10 IN ITS DECIMAL FORM
-
+        let lastIndexOfLineFeedCharacter = this.byteBuffer.lastIndexOf(10);
         if (lastIndexOfLineFeedCharacter > -1) {
           let lines = this.textDecoder.decode(this.byteBuffer).split(`\n`);
           this.byteBuffer = this.byteBuffer.slice(
@@ -203,7 +241,6 @@ class TextReader {
     });
   }
 }
-
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
