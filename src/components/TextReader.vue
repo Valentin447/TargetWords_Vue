@@ -54,9 +54,8 @@ export default {
       let file = document.getElementById("fileInput").files[0];
       let textReader = new TextReader(file);
       const reg = new RegExp("[^\\w]+|[0-9]", "g");
-
-      console.log("1");
       this.wordsArr.splice(0, this.wordsArr.length);
+      const arr = [];
       while (!textReader.endOfStream) {
         let line = await textReader.readLine();
         let lineFix = line.split("\r\n");
@@ -69,7 +68,7 @@ export default {
           if (word !== "") {
             word = word.toLowerCase();
             let wordInArr = false;
-            for (const wordObj of this.wordsArr) {
+            for (const wordObj of arr) {
               if (word === wordObj.word) {
                 wordObj.count++;
                 wordInArr = true;
@@ -77,17 +76,14 @@ export default {
               }
             }
             if (!wordInArr) {
-              this.wordsArr.push(createNewWordObj(word));
+              arr.push(createNewWordObj(word));
             }
           }
         }
       }
-
-      console.log("2");
+      this.wordsArr = arr;
       deletePlural(this.wordsArr);
-      console.log("3");
       this.wordsArr.sort((a, b) => b.count - a.count);
-      console.log("4");
       console.log(this.wordsArr);
     },
   },
