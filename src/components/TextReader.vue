@@ -1,11 +1,26 @@
 <template>
   <div>
+    <div class="input__wrapper">
+      <input
+        name="file"
+        type="file"
+        id="input__file"
+        class="input input__file"
+        multiple
+      />
+      <label for="input__file" class="input__file-button">
+        <span class="input__file-button-text">Выберите файл</span>
+      </label>
+    </div>
+
     <button @click="read" id="read">Прочитать</button>
-    <input id="fileInput" type="file" />
+    <DragAndDrop />
   </div>
 </template>
 
 <script>
+import DragAndDrop from "./DragAndDrop.vue";
+
 export default {
   data() {
     return {
@@ -34,16 +49,15 @@ export default {
       return arrayObjWords;
     },
     deletePlural(wordsObj) {
-      let singl = [];
+      const singl = [];
       for (const key in wordsObj) {
         if (key.at(-1) !== "s") {
           singl.push(key);
         }
       }
-
       for (const singlWord of singl) {
         for (const key in wordsObj) {
-          let newWord = singlWord + "s";
+          const newWord = singlWord + "s";
           if (newWord === key) {
             delete wordsObj[key];
           }
@@ -51,19 +65,18 @@ export default {
       }
     },
     async read() {
-      let file = document.getElementById("fileInput").files[0];
-      let textReader = new TextReader(file);
+      const file = document.getElementById("input__file").files[0];
+      const textReader = new TextReader(file);
       const reg = new RegExp("[^\\w]+|[0-9]", "g");
       this.wordsArr.splice(0, this.wordsArr.length);
       const arr = [];
       while (!textReader.endOfStream) {
-        let line = await textReader.readLine();
-        let lineFix = line.split("\r\n");
-        let lineNoHEX = lineFix[0].replace(/0[xX][A-Fa-f0-9]+/g, "");
-        let lineClean = lineNoHEX.replace(reg, " ");
-        let lineNoCamelCase = lineClean.replace(/([A-Z])/g, " $1");
-        let words = lineNoCamelCase.split(" ");
-
+        const line = await textReader.readLine();
+        const lineFix = line.split("\r\n");
+        const lineNoHEX = lineFix[0].replace(/0[xX][A-Fa-f0-9]+/g, "");
+        const lineClean = lineNoHEX.replace(reg, " ");
+        const lineNoCamelCase = lineClean.replace(/([A-Z])/g, " $1");
+        const words = lineNoCamelCase.split(" ");
         for (let word of words) {
           if (word !== "") {
             word = word.toLowerCase();
@@ -87,6 +100,7 @@ export default {
       console.log(this.wordsArr);
     },
   },
+  components: { DragAndDrop },
 };
 
 function createNewWordObj(word) {
@@ -239,5 +253,38 @@ class TextReader {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.input__wrapper {
+  width: 100%;
+  position: relative;
+  margin: 15px 0;
+  text-align: center;
+}
+
+.input__file {
+  opacity: 0;
+  visibility: hidden;
+  position: absolute;
+}
+
+.input__file-button-text {
+  line-height: 1;
+  margin-top: 1px;
+}
+
+.input__file-button {
+  width: 100%;
+  max-width: 290px;
+  height: 60px;
+  background: #08a652;
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 15px;
+  cursor: pointer;
+  margin: 0 auto;
+}
+</style>
