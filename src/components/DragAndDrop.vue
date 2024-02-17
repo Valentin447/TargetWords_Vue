@@ -1,10 +1,6 @@
 <template>
   <div id="file-drag-drop">
     <form class="drag-and-drop" ref="fileform">
-      <span class="drop-files">или перетащите файл сюда</span>
-      <div class="file-listing">
-        {{ file.name }}
-      </div>
     </form>
   </div>
 </template>
@@ -13,7 +9,6 @@ export default {
   data() {
     return {
       dragAndDropCapable: false,
-      file: {},
     };
   },
   methods: {
@@ -52,8 +47,8 @@ export default {
       this.$refs.fileform.addEventListener(
         "drop",
         function (e) {
-          this.file = e.dataTransfer.files[0];
-          console.log(this.file);
+          const file = e.dataTransfer.files[0];
+          this.$emit("dropFile", file);
         }.bind(this)
       );
     }
@@ -62,9 +57,9 @@ export default {
 </script>
 <style scoped lang="scss">
 .drag-and-drop {
+  position: absolute;
   width: 100%;
   height: 100vh;
-}
-.file-listing {
+  z-index: -1000;
 }
 </style>

@@ -1,33 +1,37 @@
 <template>
-  <div>
-    <div class="input__wrapper">
-      <input
-        name="file"
-        type="file"
-        id="input__file"
-        class="input input__file"
-        multiple
-      />
-      <label for="input__file" class="input__file-button">
-        <span class="input__file-button-text">Выберите файл</span>
-      </label>
-    </div>
-
-    <button @click="read" id="read">Прочитать</button>
-    <DragAndDrop />
+  <div class="reader">
+    <DragAndDrop @dropFile="chengeFile" />
+    <InputFile @inputFile="chengeFile" />
+    <p>{{ file.name }}</p>
+    <button
+      @click="read"
+      id="read"
+      :class="readButtonClass"
+      class="reader__button-read reader__button-read-hidden"
+    >
+      Прочитать
+    </button>
   </div>
 </template>
 
 <script>
 import DragAndDrop from "./DragAndDrop.vue";
+import InputFile from "./InputFile.vue";
 
 export default {
   data() {
     return {
+      file: {},
       wordsArr: [],
+      test: [],
+      readButtonClass: "",
     };
   },
   methods: {
+    chengeFile(file) {
+      this.file = file;
+      this.readButtonClass = "reader__button-read reader__button-read-showe";
+    },
     getSortedArray(wordsObj) {
       const arrayObjWords = [];
       let currentWord = {
@@ -65,8 +69,7 @@ export default {
       }
     },
     async read() {
-      const file = document.getElementById("input__file").files[0];
-      const textReader = new TextReader(file);
+      const textReader = new TextReader(this.file);
       const reg = new RegExp("[^\\w]+|[0-9]", "g");
       this.wordsArr.splice(0, this.wordsArr.length);
       const arr = [];
@@ -97,10 +100,12 @@ export default {
       this.wordsArr = arr;
       deletePlural(this.wordsArr);
       this.wordsArr.sort((a, b) => b.count - a.count);
-      console.log(this.wordsArr);
     },
   },
-  components: { DragAndDrop },
+  components: {
+    DragAndDrop,
+    InputFile,
+  },
 };
 
 function createNewWordObj(word) {
@@ -254,37 +259,20 @@ class TextReader {
 </script>
 
 <style scoped lang="scss">
-.input__wrapper {
-  width: 100%;
-  position: relative;
-  margin: 15px 0;
-  text-align: center;
-}
-
-.input__file {
-  opacity: 0;
-  visibility: hidden;
-  position: absolute;
-}
-
-.input__file-button-text {
-  line-height: 1;
-  margin-top: 1px;
-}
-
-.input__file-button {
-  width: 100%;
-  max-width: 290px;
-  height: 60px;
-  background: #08a652;
-  color: #fff;
-  font-size: 1.5rem;
-  font-weight: 700;
+.reader {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: center;
-  border-radius: 15px;
-  cursor: pointer;
-  margin: 0 auto;
+  align-items: center;
+  &__button-read {
+    width: max-content;
+
+    &-hidden {
+      display: block;
+    }
+    &-showe {
+      display: block;
+    }
+  }
 }
 </style>
