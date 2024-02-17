@@ -2,7 +2,7 @@
   <div class="reader">
     <DragAndDrop @dropFile="chengeFile" />
     <InputFile @inputFile="chengeFile" />
-    <p>{{ file.name }}</p>
+    <p class="reader__file-name">{{ file.name }}</p>
     <button
       @click="read"
       id="read"
@@ -100,6 +100,7 @@ export default {
       this.wordsArr = arr;
       deletePlural(this.wordsArr);
       this.wordsArr.sort((a, b) => b.count - a.count);
+      console.log(this.wordsArr);
     },
   },
   components: {
@@ -264,11 +265,26 @@ class TextReader {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  font-family: "Rubik";
+  &__file-name{
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
   &__button-read {
     width: max-content;
-
+    font-size: 1.5rem;
+    background-color: #08a652;
+    color: #fff;
+    font-weight: 600;
+    padding: 15px 30px;
+    border: none;
+    cursor: pointer;
+    border-radius: 15px;
+    &:hover{
+      background-color: #1fbe69;
+    }
     &-hidden {
-      display: block;
+      display: none;
     }
     &-showe {
       display: block;
