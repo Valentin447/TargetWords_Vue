@@ -12,11 +12,13 @@
       Прочитать
     </button>
   </div>
+  <router-view />
 </template>
 
 <script>
 import DragAndDrop from "./DragAndDrop.vue";
 import InputFile from "./InputFile.vue";
+import { mapMutations } from "vuex";
 
 export default {
   data() {
@@ -27,6 +29,7 @@ export default {
     };
   },
   methods: {
+    ...mapMutations(['SET_WORDS_LIST', 'SET_ALL_WORDS_COUNT']),
     chengeFile(file) {
       this.file = file;
       this.readButtonClass = "reader__button-read reader__button-read-showe";
@@ -44,6 +47,7 @@ export default {
             currentWord.count = wordsObj[key];
           }
         }
+
         arrayObjWords.push(structuredClone(currentWord));
         delete wordsObj[currentWord.word];
         currentWord.word = "";
@@ -67,11 +71,18 @@ export default {
         }
       }
     },
+    deleteOneSymbol(word){
+      if(word == /[a-z]/ && word !== 'a' && word !== 'i'){
+        return true;
+      }
+      return false;
+    },
     async read() {
       const textReader = new TextReader(this.file);
       const reg = new RegExp("[^\\w]+|[0-9]", "g");
       this.wordsArr.splice(0, this.wordsArr.length);
       const arr = [];
+      let countAllWords = 0;
       while (!textReader.endOfStream) {
         const line = await textReader.readLine();
         const lineFix = line.split("\r\n");
@@ -80,7 +91,8 @@ export default {
         const lineNoCamelCase = lineClean.replace(/([A-Z])/g, " $1");
         const words = lineNoCamelCase.split(" ");
         for (let word of words) {
-          if (word !== "") {
+          if (word !== "" && !(word.length === 1 && !(word === 'a' || word === 'i'))) {
+            countAllWords++;
             word = word.toLowerCase();
             let wordInArr = false;
             for (const wordObj of arr) {
@@ -96,10 +108,13 @@ export default {
           }
         }
       }
+      this.SET_ALL_WORDS_COUNT(countAllWords);
       this.wordsArr = arr;
       deletePlural(this.wordsArr);
       this.wordsArr.sort((a, b) => b.count - a.count);
-      console.log(this.wordsArr);
+      this.SET_WORDS_LIST(this.wordsArr);
+      //this.addWorsList(this.wordsArr);
+      this.$router.push({ path: '/list' });
     },
   },
   components: {
