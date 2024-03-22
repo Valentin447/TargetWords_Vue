@@ -71,11 +71,12 @@ export default {
         }
       }
     },
-    deleteOneSymbol(word){
-      if(word == /[a-z]/ && word !== 'a' && word !== 'i'){
-        return true;
+    isOneSymbolWodr(word){
+      const regexp = /[a-z]/;
+      if(regexp.test(word) && word !== 'a' && word !== 'i'){
+        return false;
       }
-      return false;
+      return true;
     },
     async read() {
       const textReader = new TextReader(this.file);
@@ -113,7 +114,6 @@ export default {
       deletePlural(this.wordsArr);
       this.wordsArr.sort((a, b) => b.count - a.count);
       this.SET_WORDS_LIST(this.wordsArr);
-      //this.addWorsList(this.wordsArr);
       this.$router.push({ path: '/list' });
     },
   },
