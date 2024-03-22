@@ -8,11 +8,11 @@
 export default {
   data() {
     return {
-      dragAndDropCapable: false,
+      dragAndDrop: false,
     };
   },
   methods: {
-    determineDragAndDropCapable() {
+    determineDragAndDrop() {
       const div = document.createElement("div");
       return (
         ("draggable" in div || ("ondragstart" in div && "ondrop" in div)) &&
@@ -22,8 +22,8 @@ export default {
     },
   },
   mounted() {
-    this.dragAndDropCapable = this.determineDragAndDropCapable();
-    if (this.dragAndDropCapable) {
+    this.dragAndDrop = this.determineDragAndDrop();
+    if (this.dragAndDrop) {
       [
         "drag",
         "dragstart",
