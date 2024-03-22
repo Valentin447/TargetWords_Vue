@@ -1,18 +1,13 @@
 <template>
-  <PreLoader />
   <router-view />
 </template>
-<script>
-import PreLoader from "./components/PreLoader.vue";
-import TextReader from "./components/TextReader.vue";
 
+<script>
 export default {
-  components: {
-    TextReader,
-    PreLoader,
-},
+  components: {},
 };
 </script>
+
 <style lang="scss">
 body {
   margin: 0;

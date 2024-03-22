@@ -1,6 +1,8 @@
 <template>
+  <div class="index-page-wrap">
   <PreLoader />
   <TextReader />
+</div>
 </template>
 <script>
 import PreLoader from '@/components/PreLoader.vue';
@@ -11,5 +13,9 @@ export default {
 }
 </script>
 <style scoped lang="scss">
-  
+  .index-page-wrap{
+    width: 100%;
+    height: 100vh;
+    padding-top: 200px;
+  }
 </style>
