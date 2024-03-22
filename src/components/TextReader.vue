@@ -71,7 +71,7 @@ export default {
         }
       }
     },
-    isOneSymbolWodr(word){
+    isOneSymbolWord(word){
       const regexp = /[a-z]/;
       if(regexp.test(word) && word !== 'a' && word !== 'i'){
         return false;
