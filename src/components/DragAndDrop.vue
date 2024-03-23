@@ -22,36 +22,61 @@ export default {
     },
   },
   mounted() {
-    this.dragAndDrop = this.determineDragAndDrop();
-    if (this.dragAndDrop) {
-      [
-        "drag",
-        "dragstart",
-        "dragend",
-        "dragover",
-        "dragenter",
-        "dragleave",
-        "drop",
-      ].forEach(
-        function (event) {
-          this.$refs.fileform.addEventListener(
-            event,
-            function (e) {
-              e.preventDefault();
-              e.stopPropagation();
-            }.bind(this),
-            false
-          );
-        }.bind(this)
-      );
-      this.$refs.fileform.addEventListener(
-        "drop",
-        function (e) {
+    const dropZone = document.body;
+    dropZone.addEventListener("dragenter", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    });
+  
+    dropZone.addEventListener("dragover", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    });
+  
+    dropZone.addEventListener("dragleave", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    });
+  
+    // Это самое важное событие, событие, которое дает доступ к файлам
+    dropZone.addEventListener("drop", function (e) {
+          e.preventDefault();
+          e.stopPropagation();
           const file = e.dataTransfer.files[0];
           this.$emit("dropFile", file);
         }.bind(this)
       );
-    }
+    
+    // this.dragAndDrop = this.determineDragAndDrop();
+    // if (this.dragAndDrop) {
+    //   [
+    //     "drag",
+    //     "dragstart",
+    //     "dragend",
+    //     "dragover",
+    //     "dragenter",
+    //     "dragleave",
+    //     "drop",
+    //   ].forEach(
+    //     function (event) {
+    //       this.$refs.fileform.addEventListener(
+    //         event,
+    //         function (e) {
+    //           e.preventDefault();
+    //           e.stopPropagation();
+    //         }.bind(this),
+    //         false
+    //       );
+    //     }.bind(this)
+    //   );
+    //   this.$refs.fileform.addEventListener(
+    //     "drop",
+    //     function (e) {
+    //       const file = e.dataTransfer.files[0];
+    //       this.$emit("dropFile", file);
+    //     }.bind(this)
+    //   );
+    // }
   },
 };
 </script>
